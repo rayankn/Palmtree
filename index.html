@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PALMTREE – Learn Languages Through Reading</title>
+
+<style>
+/* =========================
+   DESIGN SYSTEM
+========================= */
+:root {
+    --bg-main: #0f172a;          /* deep navy */
+    --bg-panel: #111827;         /* dark slate */
+    --bg-card: #1f2937;          /* card surface */
+    --bg-soft: #020617;
+
+    --accent: #22c55e;           /* palm green */
+    --accent-muted: #4ade80;
+
+    --text-main: #e5e7eb;
+    --text-muted: #9ca3af;
+    --text-soft: #cbd5f5;
+
+    --border-soft: rgba(255,255,255,0.08);
+
+    --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-reading: "Georgia", "Times New Roman", serif;
+}
+
+/* =========================
+   BASE RESET
+========================= */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
+body {
+    background: linear-gradient(180deg, #020617, #020617 60%, #020617);
+    font-family: var(--font-ui);
+    color: var(--text-main);
+    overflow: hidden;
+}
+
+/* =========================
+   HEADER / BRAND
+========================= */
+.header {
+    height: 64px;
+    background: rgba(2,6,23,0.9);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border-soft);
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    gap: 16px;
+}
+
+.brand {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--accent);
+}
+
+.subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* Menu button */
+.menu-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+.sidebar {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 280px;
+    height: calc(100% - 64px);
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border-soft);
+    padding: 18px;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 20;
+    overflow-y: auto;
+}
+
+.sidebar.open {
+    transform: translateX(0);
+}
+
+.sidebar h3 {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.sidebar button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid var(--border-soft);
+    color: var(--text-main);
+    text-align: left;
+    cursor: pointer;
+}
+
+.sidebar button.active {
+    background: var(--bg-card);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* =========================
+   MAIN LAYOUT
+========================= */
+.app {
+    margin-top: 64px;
+    height: calc(100% - 64px);
+    display: flex;
+    flex-direction: column;
+}
+
+.reading-zone {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.pane {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.pane.translation {
+    background: rgba(255,255,255,0.03);
+    border-top: 1px solid var(--border-soft);
+}
+
+/* =========================
+   CONTROLS
+========================= */
+.pane-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.pane-title {
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.control-btn {
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border-soft);
+    background: var(--bg-card);
+    color: var(--text-main);
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.control-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* =========================
+   CONTENT CARDS
+========================= */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 18px;
+}
+
+.text {
+    font-family: var(--font-reading);
+    font-size: 19px;
+    line-height: 1.8;
+    color: var(--text-main);
+}
+
+/* =========================
+   VOCABULARY
+========================= */
+.vocab {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border-soft);
+}
+
+.vocab-title {
+    font-size: 12px;
+    color: var(--accent-muted);
+    margin-bottom: 6px;
+}
+
+.vocab-item {
+    font-size: 14px;
+    color: var(--text-soft);
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <button class="menu-btn" onclick="UI.toggleMenu()">☰</button>
+    <div>
+        <div class="brand">PALMTREE</div>
+        <div class="subtitle">Learn languages through calm, meaningful reading</div>
+    </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+    <h3>Levels</h3>
+    <button onclick="App.load('absolute')" id="btn-absolute">Absolute Beginner</button>
+    <button onclick="App.load('beginner')" id="btn-beginner">Beginner</button>
+
+    <h3>Language</h3>
+    <button class="active">Spanish</button>
+</div>
+
+<!-- APP -->
+<div class="app">
+<div class="reading-zone">
+
+<!-- SPANISH -->
+<div class="pane">
+    <div class="pane-header">
+        <div class="pane-title">Spanish</div>
+        <button class="control-btn" onclick="Speech.speak('es')">Listen</button>
+    </div>
+    <div id="spanish"></div>
+</div>
+
+<!-- ENGLISH -->
+<div class="pane translation">
+    <div class="pane-header">
+        <div class="pane-title">English</div>
+        <button class="control-btn" onclick="Speech.speak('en')">Listen</button>
+    </div>
+    <div id="english"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+/* =========================
+   DATA
+========================= */
+const CONTENT = {
+absolute: {
+    es: [
+        {
+            text: "Vivo en una ciudad donde el tiempo se mueve despacio. Las calles no cambian mucho, y la gente camina sin prisa.",
+            vocab: ["despacio – slowly", "calles – streets", "sin prisa – without hurry"]
+        },
+        {
+            text: "Trabajo durante el día y vuelvo a casa antes de que oscurezca. Valoro el silencio y las rutinas simples.",
+            vocab: ["oscurezca – gets dark", "valoro – I value", "rutinas – routines"]
+        }
+    ],
+    en: [
+        {
+            text: "I live in a city where time moves slowly. The streets do not change much, and people walk without hurry.",
+            vocab: []
+        },
+        {
+            text: "I work during the day and return home before it gets dark. I value silence and simple routines.",
+            vocab: []
+        }
+    ]
+},
+beginner: {
+    es: [
+        {
+            text: "Con el paso del tiempo, aprendí a observar más y hablar menos. No todo necesita una respuesta inmediata.",
+            vocab: ["paso del tiempo – passing of time", "observar – to observe", "inmediata – immediate"]
+        }
+    ],
+    en: [
+        {
+            text: "With the passing of time, I learned to observe more and speak less. Not everything needs an immediate response.",
+            vocab: []
+        }
+    ]
+}
+};
+
+/* =========================
+   UI
+========================= */
+const UI = {
+    toggleMenu() {
+        document.getElementById("sidebar").classList.toggle("open");
+    },
+    setActive(level) {
+        document.querySelectorAll(".sidebar button").forEach(b => b.classList.remove("active"));
+        document.getElementById("btn-" + level).classList.add("active");
+    }
+};
+
+/* =========================
+   SPEECH
+========================= */
+const Speech = {
+    speak(lang) {
+        const text = CURRENT[lang].map(p => p.text).join(" ");
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = lang === "es" ? "es-ES" : "en-US";
+        speechSynthesis.cancel();
+        speechSynthesis.speak(u);
+    }
+};
+
+let CURRENT = {};
+
+/* =========================
+   APP
+========================= */
+const App = {
+    load(level) {
+        CURRENT = CONTENT[level];
+        UI.setActive(level);
+        document.getElementById("sidebar").classList.remove("open");
+
+        const s = document.getElementById("spanish");
+        const e = document.getElementById("english");
+        s.innerHTML = "";
+        e.innerHTML = "";
+
+        CURRENT.es.forEach(p => {
+            s.innerHTML += `
+            <div class="card">
+                <div class="text">${p.text}</div>
+                <div class="vocab">
+                    <div class="vocab-title">Important vocabulary</div>
+                    ${p.vocab.map(v => `<div class="vocab-item">${v}</div>`).join("")}
+                </div>
+            </div>`;
+        });
+
+        CURRENT.en.forEach(p => {
+            e.innerHTML += `
+            <div class="card">
+                <div class="text">${p.text}</div>
+            </div>`;
+        });
+    }
+};
+
+App.load("absolute");
+</script>
+
+</body>
+</html>
